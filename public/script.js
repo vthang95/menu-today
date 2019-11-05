@@ -41,9 +41,18 @@ const Tools = (function() {
     }, {});
   }
 
+  function getCookie() {
+    let cookie = document.cookie;
+    return cookie.split(";").map(el => el.trim().split("=")).reduce((acc, [k, v]) => {
+      acc[k] = decodeURIComponent(v);
+      return acc;
+    }, {});
+  }
+
   return {
     request,
-    getParams
+    getParams,
+    getCookie
   }
 })()
 
@@ -54,6 +63,12 @@ const FrontendLogic = (function() {
   }
 
   function checkUserLogged() {
+    let cookie = Tools.getCookie();
+    if (!cookie.ssid) {
+      localStorage.removeItem("user");
+      window.User = null;
+      return;
+    }
     let params = Tools.getParams();
     if (params.id && params.name) {
       let user = { id: params.id, name: params.name };
