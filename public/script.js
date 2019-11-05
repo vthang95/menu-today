@@ -59,7 +59,6 @@ const FrontendLogic = (function() {
   function showLogin() {
     let loginEl = document.getElementById("login");
     loginEl.style.display = "flex";
-    console.log("show")
     document.getElementById("content").style.display = "none";
   }
 
@@ -87,7 +86,7 @@ const FrontendLogic = (function() {
     <div data-food-id="${el.food.id}" class="food-item">
       <div class="food-form-item">
         <input class="food-selection-item" onclick="FoodChoose.call(this)" data-food-id="${el.food.id}" id="radio-${el.food.id}" type="radio" ${el.users.findIndex(user => user.id == window.User.id) < 0 ? "" : "checked"} name="food" value="${el.food.name}">
-        <label for="radio-${el.food.id}">${el.food.name}</label>
+        <label for="radio-${el.food.id}">${el.food.name} (${el.users.length})</label>
       </div>
       <div id="food-people-${el.food.id}"></div>
     </div>
@@ -163,7 +162,6 @@ const Socket = (function() {
         div.innerHTML = foodInfo.users[i].name;
         div.className = "people-item";
 
-        console.log(foodInfo.users[i], window.User)
         if (foodInfo.users[i].id == window.User.id) {
           div.className += " self"
         }

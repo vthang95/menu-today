@@ -120,7 +120,6 @@ app.get('/', (req, res) => {
   }, {});
 
   let ssid = cookie.ssid;
-  console.log("ssid", ssid)
   if (ssid) {
     let store = getStore();
     store.users = store.users || [];
@@ -172,14 +171,12 @@ io.on('connection', function(socket){
   socket.emit("refresh", getToday());
 
   socket.on('disconnect', function() {
-    console.log('disconnected');
   })
 
   socket.on('choose', function(data) {
     let menu = getMenu();
     menu.today = menu.today || [];
     for (let i = 0; i < menu.today.length; i++) {
-      console.log('splice', menu.today[i])
       let userIdx = menu.today[i].users.findIndex((userId => userId == data.userId));
       if (userIdx >= 0) {
         menu.today[i].users.splice(userIdx, 1);
