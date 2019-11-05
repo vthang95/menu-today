@@ -21,7 +21,6 @@ window.onload = function() {
     err.innerHTML = params["error_message"];
   }
 
-  FrontendLogic.showFoodMenu();
   Socket.init();
 }
 
@@ -60,6 +59,8 @@ const FrontendLogic = (function() {
   function showLogin() {
     let loginEl = document.getElementById("login");
     loginEl.style.display = "flex";
+    console.log("show")
+    document.getElementById("content").style.display = "none";
   }
 
   function checkUserLogged() {
@@ -74,10 +75,6 @@ const FrontendLogic = (function() {
       let user = { id: params.id, name: params.name };
       localStorage.setItem("user", JSON.stringify(user));
     }
-  }
-
-  function showFoodMenu() {
-    BackendLogic.getFoodMenu();
   }
 
   function renderFoods(today) {
@@ -102,28 +99,14 @@ const FrontendLogic = (function() {
   return {
     showLogin,
     checkUserLogged,
-    showFoodMenu,
     renderFoods
   };
 })();
 
 const BackendLogic = (function() {
-  function getFoodMenu() {
-    Tools.request("GET", "/food-menu", null, function() {
-      if (this.readyState == 4 && this.status == 200) {
-        let json = JSON.parse(this.responseText);
-        let foods = json.menu.today.map(el => {
-          let idx = json.menu.menu.findIndex(e => e.id == el.food)
-          if (idx >= 0) return json.menu.menu[idx]
-          return null;
-        })
-        .filter(el => el);
-      }
-    })
-  }
+  
 
   return {
-    getFoodMenu
   }
 })();
 

@@ -117,6 +117,34 @@ header .header-content .header-item:first-child {
   padding: 30px;
 }
 
+.login h1 {
+  margin-bottom: 10px;
+  text-decoration: underline;
+}
+
+.login form {
+  display: flex;
+  flex-direction: column;
+}
+.login form input {
+  height: 32px;
+  max-width: 400px;
+  margin: 10px;
+  width: 100%;
+  border: 2px solid var(--primary-color);
+  padding-left: 8px;
+}
+.login form button {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--color-cyan);
+  color: white;
+  height: 32px;
+  width: 200px;
+  margin: 10px;
+  border: "1px solid var(--color-cyan) !important";
+}
+
 .food-item {
   margin-top: 25px;
   margin-bottom: 25px;
