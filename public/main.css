@@ -73,6 +73,8 @@ table {
   color: red;
 }
 
+
+
 html, body {
   font-size: 18px
 }
@@ -82,6 +84,7 @@ html, body {
   --secondary-color: yellow;
   --color-purple: #AB3783;
   --color-cyan: #295BA7;
+  --color-text-light: #d9d9d9;
 }
 
 .wrapper {
@@ -174,6 +177,10 @@ header .header-content .header-item:first-child {
 
 .greeting {
   text-align: right;
+}
+
+.date {
+  color: var(--color-text-light);
 }
 
 @media screen and (max-width: 370px) {

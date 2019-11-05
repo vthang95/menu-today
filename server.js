@@ -92,7 +92,7 @@ app.post("/register", (req, res) => {
     if (store.users[userIdx].password != hash) return res.redirect("/?error_message=" + "Tài khoản này đã được đăng kí. Nhưng password không đúng. HI");
     else {
       res.cookie("ssid", store.users[userIdx].id);
-      return res.redirect("/?name="+store.users[userIdx].name+"&id="+store.users[userIdx].id);
+      return res.redirect("/?name="+store.users[userIdx].name+"&id="+encodeURIComponent(store.users[userIdx].id));
     }
   }
   

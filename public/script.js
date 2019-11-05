@@ -163,6 +163,9 @@ const Socket = (function() {
   }
 
   function refreshMenu(data) {
+    let date = document.getElementById("date");
+    date.innerHTML = data.date;
+
     let menu = data.menu;
 
     FrontendLogic.renderFoods(data);
