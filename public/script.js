@@ -111,6 +111,7 @@ const FrontendLogic = (function() {
 
     let menu = document.getElementById("food-menu");
     let sumNum = 0;
+    let peopleCount = 0;
 
     for (let i = 0; i < menu.children.length; i++) {
       let child = menu.children[i];
@@ -122,20 +123,24 @@ const FrontendLogic = (function() {
         price = parseInt(price)
         length = parseInt(length);
         sumNum += price * length;
+        peopleCount += length;
       } catch(err) {
         console.log(err)
       }
 
       if (parseInt(length) > 0) {
         let div = document.createElement("div");
-        div.innerHTML = `${name} - ${length} x ${Tools.formatNumber(price)} đ`
+        div.innerHTML = `${name} - <span class="sum-length">${length}</span> x ${Tools.formatNumber(price)} đ`
         summary.appendChild(div);
       }
     }
 
     let sum = document.createElement("div");
     sum.className = "sum-price";
-    sum.innerHTML = `<strong>Tổng: <span class="sum-number">${Tools.formatNumber(sumNum)} đ</span>`;
+    sum.innerHTML = `
+      <strong>Số người: <span class="sum-number">${peopleCount}</span></strong>,${" "}
+      <strong>Tổng tiền: <span class="sum-number">${Tools.formatNumber(sumNum)} đ</span>
+      `;
 
     summary.appendChild(sum);
   }

@@ -258,6 +258,12 @@ header .header-content .header-item:first-child {
 .sum-price {
   margin-top: 20px;
 }
+
+.sum-length {
+  color: var(--color-purple);
+  font-weight: 600;
+}
+
 .sum-number {
   color: var(--color-orange);
   font-weight: 900;
