@@ -212,6 +212,7 @@ function getToday() {
 
     return {
       food: menu.menu[foodIdx],
+      default: !!el.default,
       users: el.users.map(userId => {
         let userIdx = store.users.findIndex(user => user.id == userId)
         if (userIdx < 0) return { id: userId, name: "UNKNOWN" }

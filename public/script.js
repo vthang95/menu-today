@@ -81,11 +81,13 @@ const FrontendLogic = (function() {
     if (!sectionFoods) return;
 
     sectionFoods.setAttribute("data-date", today.date)
+    console.log("t", today)
 
     let foodDoms = today.menu.map(el => `
     <div data-food-id="${el.food.id}" class="food-item">
       <div class="food-form-item">
         <input class="food-selection-item" onclick="FoodChoose.call(this)" data-food-id="${el.food.id}" id="radio-${el.food.id}" type="radio" ${el.users.findIndex(user => user.id == window.User.id) < 0 ? "" : "checked"} name="food" value="${el.food.name}">
+        ${el.default ? "" : `<span class="special">Special</span>`}
         <label for="radio-${el.food.id}">${el.food.name} (${el.users.length})</label>
       </div>
       <div id="food-people-${el.food.id}"></div>

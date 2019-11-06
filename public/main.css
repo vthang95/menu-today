@@ -85,6 +85,7 @@ html, body {
   --color-purple: #AB3783;
   --color-cyan: #295BA7;
   --color-text-light: #d9d9d9;
+  --color-orange: #ff6c34;
 }
 
 .wrapper {
@@ -129,7 +130,7 @@ header .header-content .header-item:first-child {
 .login form input {
   height: 32px;
   max-width: 400px;
-  margin: 10px;
+  margin: 10px 10px 10px 0px;
   width: 100%;
   border: 2px solid var(--primary-color);
   padding-left: 8px;
@@ -141,7 +142,7 @@ header .header-content .header-item:first-child {
   color: white;
   height: 32px;
   width: 200px;
-  margin: 10px;
+  margin: 10px 10px 10px 0px;
   border: "1px solid var(--color-cyan) !important";
 }
 
@@ -218,3 +219,12 @@ header .header-content .header-item:first-child {
   }
 }
 
+.special {
+  font-size: 10px;
+  background: var(--color-orange);
+  margin-right: 10px;
+  padding: 4px;
+  color: white;
+  font-weight: 600;
+  border-radius: 4px;
+}
