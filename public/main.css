@@ -175,7 +175,8 @@ header .header-content .header-item:first-child {
   position: relative;
   display: inline-block;
 }
-.food-title::before {
+
+.heading-special--big::before {
   content: '';
   position: absolute;
   width: 100%;
@@ -186,8 +187,29 @@ header .header-content .header-item:first-child {
   top: 12px;
 }
 
+.heading-normal {
+  font-weight: 600;
+  font-size: 22px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+.heading-special--normal::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 90%;
+  background: var(--secondary-color);
+  left: 8px;
+  z-index: -1;
+  top: 6px;
+}
+
 .people {
   display: flex;
+  flex-wrap: wrap;
 }
 
 .people-item {
@@ -227,4 +249,16 @@ header .header-content .header-item:first-child {
   color: white;
   font-weight: 600;
   border-radius: 4px;
+}
+
+.summary h1 {
+  margin-bottom: 10px;
+}
+
+.sum-price {
+  margin-top: 20px;
+}
+.sum-number {
+  color: var(--color-orange);
+  font-weight: 900;
 }

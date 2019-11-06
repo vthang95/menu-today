@@ -32,6 +32,34 @@ const Tools = (function() {
     xhr.send(data);
   }
 
+  function formatNumber(value, currency, prefix = true) {
+    value = value ? value.toString() : "0";
+    if (value.includes(".") && value.indexOf(".") > value.length - 3)
+      return value;
+    let amount = parseInt(value) || 0;
+    amount = amount
+      ? currency != "VND" && typeof currency != "undefined" && currency
+        ? `${Math.floor(amount / 100)
+            .toString()
+            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")}${
+            amount % 100
+              ? prefix
+                ? "." + (amount % 100)
+                : "." +
+                  ((amount % 100) % 10
+                    ? amount % 100
+                    : Math.floor((amount % 100) / 10))
+              : prefix
+              ? ".00"
+              : ""
+          }`
+        : amount.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+      : amount;
+    if (typeof currency != "undefined" && prefix)
+      return amount + " " + getCurrencySymbol(currency);
+    else return amount;
+  }
+
   function getParams() {
     let search = location.search.substr(1);
     return search.split("&").map(el => el.split("=")).reduce((acc, [k, v]) => {
@@ -51,7 +79,8 @@ const Tools = (function() {
   return {
     request,
     getParams,
-    getCookie
+    getCookie,
+    formatNumber
   }
 })()
 
@@ -76,19 +105,54 @@ const FrontendLogic = (function() {
     }
   }
 
+  function renderSummary() {
+    let summary = document.getElementById("summary");
+    summary.innerHTML = "";
+
+    let menu = document.getElementById("food-menu");
+    let sumNum = 0;
+
+    for (let i = 0; i < menu.children.length; i++) {
+      let child = menu.children[i];
+      if (!child) continue;
+      let name = child.getAttribute("data-food-name");
+      let price = child.getAttribute("data-food-price");
+      let length = child.querySelector(".food-length").innerHTML;
+      try {
+        price = parseInt(price)
+        length = parseInt(length);
+        sumNum += price * length;
+      } catch(err) {
+        console.log(err)
+      }
+
+      if (parseInt(length) > 0) {
+        let div = document.createElement("div");
+        div.innerHTML = `${name} - ${length} x ${Tools.formatNumber(price)} đ`
+        summary.appendChild(div);
+      }
+    }
+
+    let sum = document.createElement("div");
+    sum.className = "sum-price";
+    sum.innerHTML = `<strong>Tổng: <span class="sum-number">${Tools.formatNumber(sumNum)} đ</span>`;
+
+    summary.appendChild(sum);
+  }
+
   function renderFoods(today) {
+    console.log("today", today)
     let sectionFoods = document.getElementById("food-menu");
     if (!sectionFoods) return;
 
     sectionFoods.setAttribute("data-date", today.date)
-    console.log("t", today)
 
     let foodDoms = today.menu.map(el => `
-    <div data-food-id="${el.food.id}" class="food-item">
+    <div data-food-id="${el.food.id}" data-food-name="${el.food.name}" data-food-price="${el.food.price || 0}" class="food-item">
       <div class="food-form-item">
         <input class="food-selection-item" onclick="FoodChoose.call(this)" data-food-id="${el.food.id}" id="radio-${el.food.id}" type="radio" ${el.users.findIndex(user => user.id == window.User.id) < 0 ? "" : "checked"} name="food" value="${el.food.name}">
         ${el.default ? "" : `<span class="special">Special</span>`}
-        <label for="radio-${el.food.id}">${el.food.name} (${el.users.length})</label>
+        <label for="radio-${el.food.id}">${el.food.name} (<span class="food-length">${el.users.length}</span>)</label>
       </div>
       <div id="food-people-${el.food.id}"></div>
     </div>
@@ -100,7 +164,8 @@ const FrontendLogic = (function() {
   return {
     showLogin,
     checkUserLogged,
-    renderFoods
+    renderFoods,
+    renderSummary
   };
 })();
 
@@ -113,7 +178,7 @@ const BackendLogic = (function() {
 
 const Socket = (function() {
   function init() {
-    const socket = io();
+    const socket = io("/users");
 
     window.FoodChoose = function() {
       let foodId = this.getAttribute("data-food-id");
@@ -176,6 +241,7 @@ const Socket = (function() {
 
       peopleContainer.innerHTML = "";
       peopleContainer.appendChild(people);
+      FrontendLogic.renderSummary();
     }
   }
 

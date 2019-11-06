@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata:400,700&display=swap&subset=vietnamese" rel="stylesheet">
+    <link rel="stylesheet" href="/main.css">
+  </head>
+  <body>
+    <section>
+      <div class="wrapper">
+        <div class="date">* <span id="date"></span></div>
+        <form action"/order" method="post">
+          <div class="food-container" id="food-menu">
+          </div>
+          <input id="form-user-id" type="hidden" name="user-id">
+        </form>
+      </div>
+    </section>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="application/javascript" src="/admin.js"></script>
+  </body>
+</html>

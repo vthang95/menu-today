@@ -112,6 +112,10 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 })
 
+app.get('/atmin', (req, res) => {
+  res.sendfile('public/admin.html');
+})
+
 app.get('/', (req, res) => {
   let cookieStr = req.cookie || "";
   let cookie = cookieStr.split(";").map(el => el.trim().split("=")).reduce((acc, [k, v]) => {
@@ -130,7 +134,8 @@ app.get('/', (req, res) => {
   res.sendfile('public/index_page.html');
 });
 
-io.on('connection', function(socket){
+const userSoc = io.of("/users")
+userSoc.on('connection', function(socket){
   let cookieStr = socket.handshake.headers.cookie || "";
   let cookie = cookieStr.split(";").map(el => el.trim().split("=")).reduce((acc, [k, v]) => {
     acc[k] = decodeURIComponent(v);
@@ -223,5 +228,12 @@ function getToday() {
 
   return { menu: today, date: menu.date };
 }
+
+const adminSoc = io.of("/atmin");
+adminSoc.on("connect", function(socket) {
+  let menu = getMenu();
+  let allFoods = menu.menu
+  socket.emit("all-foods", allFoods);
+})
 
 http.listen(port, () => console.log(`Example app listening on port ${port}!`));
