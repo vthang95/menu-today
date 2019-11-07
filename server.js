@@ -103,7 +103,7 @@ app.post("/register", (req, res) => {
   store.users.push(user);
   saveStore(store);
 
-  res.cookie("ssid", user.id);
+  res.cookie("ssid", user.id, { maxAge: 123212312312 });
   res.redirect("/?name="+user.name+"&id="+encodeURIComponent(user.id));
 });
 
@@ -181,9 +181,13 @@ userSoc.on('connection', function(socket){
   socket.on('choose', function(data) {
     let menu = getMenu();
     menu.today = menu.today || [];
+
+    let lastChoose = {};
+
     for (let i = 0; i < menu.today.length; i++) {
       let userIdx = menu.today[i].users.findIndex((userId => userId == data.userId));
       if (userIdx >= 0) {
+        lastChoose = { itemIdx: i };
         menu.today[i].users.splice(userIdx, 1);
       }
     }
@@ -192,7 +196,9 @@ userSoc.on('connection', function(socket){
     if (itemIdx < 0) return; 
     let userIdx = menu.today[itemIdx].users.findIndex(userId => userId == data.userId);
     if (userIdx >= 0) return;
-    menu.today[itemIdx].users.push(data.userId);
+
+    if (lastChoose.itemIdx != itemIdx)
+      menu.today[itemIdx].users.push(data.userId);
 
     saveMenu(menu);
     let today = getToday();
