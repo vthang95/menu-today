@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require('express');
 const app = express()
 const port = 2000;
 const fs = require("fs");
@@ -17,49 +17,41 @@ function buildLog(userId, foodId) {
   }
 }
 
-fs.readFile("data.json", "utf-8", function(err, content) {
+const DATA_FILE = "data.json";
+const MENU_FILE = "menu-today.json";
+
+fs.readFile("data.json", "utf-8", function(_err, content) {
   if (!content) {
     let initStore = {
       users: [],
       logs: []
     }
-    fs.writeFileSync("data.json", JSON.stringify(initStore), function(err) {
-      throw("Cannot init store");
+    fs.writeFileSync("data.json", JSON.stringify(initStore), function(_err) {
+      throw("Cannot init store! ERR CODE: RFD0001");
     })
   }
 });
-fs.readFile("menu-today.json", "utf-8", function(err, content) {
+fs.readFile("menu-today.json", "utf-8", function(_err, content) {
   if (!content) {
     let initMenu= {
       date: '',
       today: [],
       menu: []
     }
-    fs.writeFileSync("menu-today.json", JSON.stringify(initMenu), function(err) {
-      throw("Cannot init Menu");
+    fs.writeFileSync("menu-today.json", JSON.stringify(initMenu), function(_err) {
+      throw("Cannot init Menu! ERR CODE: RFMT0001 ");
     })
   }
 });
 
-function getStore() {
-  let store = fs.readFileSync("data.json", "utf-8");
-  return JSON.parse(store);
+function getFileToObj(fileName) {
+  let json = fs.readFileSync(fileName, "utf-8");
+  return JSON.parse(json);
 }
 
-function getMenu() {
-  let menu = fs.readFileSync("menu-today.json", "utf-8");
-  return JSON.parse(menu);
-}
-
-function saveMenu(menu) {
-  fs.writeFileSync("menu-today.json", JSON.stringify(menu), function(err) {
-    throw("Cannot save Menu");
-  })
-}
-
-function saveStore(store) {
-  fs.writeFileSync("data.json", JSON.stringify(store), function(err) {
-    throw("Cannot save store");
+function saveObjectToFile(obj, fileName) {
+  fs.writeFileSync(fileName, JSON.stringify(obj), function(_err) {
+    throw("Cannot save Menu! ERR CODE: SOTF0001");
   })
 }
 
@@ -67,7 +59,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-app.get('/food-menu', (req, res) => {
+app.get('/food-menu', (_req, res) => {
   let menu = fs.readFileSync("menu-today.json", "utf-8");
   if (!menu) res.status(422).json({ success: false });
   res.json({ menu: JSON.parse(menu) })
@@ -82,7 +74,7 @@ app.post("/register", (req, res) => {
   const hash = crypto.createHmac('sha256', secret)
                    .update(body.password)
                    .digest('hex');
-  let store = getStore();
+  let store = getFileToObj(DATA_FILE);
   store.users = store.users || [];
 
 
@@ -101,18 +93,18 @@ app.post("/register", (req, res) => {
   user.id = buff.toString("base64");
 
   store.users.push(user);
-  saveStore(store);
+  saveObjectToFile(store, DATA_FILE);
 
   res.cookie("ssid", user.id, { maxAge: 123212312312 });
   res.redirect("/?name="+user.name+"&id="+encodeURIComponent(user.id));
 });
 
-app.get("/logout", (req, res) => {
+app.get("/logout", (_req, res) => {
   res.clearCookie("ssid");
   res.redirect("/");
 })
 
-app.get('/atmin', (req, res) => {
+app.get('/atmin', (_req, res) => {
   res.sendfile('public/admin.html');
 })
 
@@ -125,7 +117,7 @@ app.get('/', (req, res) => {
 
   let ssid = cookie.ssid;
   if (ssid) {
-    let store = getStore();
+    let store = getFileToObj(DATA_FILE);
     store.users = store.users || [];
     let userIdx = store.users.findIndex(user => user.id == decodeURIComponent(ssid))
     if (userIdx < 0) return res.redirect("/");
@@ -143,7 +135,7 @@ userSoc.on('connection', function(socket){
   }, {});
 
   let ssid = cookie.ssid;
-  store = getStore();
+  store = getFileToObj(DATA_FILE);
   store.users = store.users || [];
 
   if (ssid) {
@@ -158,19 +150,6 @@ userSoc.on('connection', function(socket){
 
   let user = Base.decode64(ssid).split("-")[0];
 
-  let menu = getMenu();
-  menu.today = menu.today || [];
-  
-
-  let today = menu.today.map(el => {
-    el.users.map(userId => {
-      let userIdx = store.users.findIndex(user => user.id == userId)
-      if (userIdx < 0) return { id: userId, name: "UNKNOWN" }
-      return { id: userId, name: store.users[userIdx].name }
-    })
-    return el;
-  })
-
   socket.broadcast.emit("join", user);
 
   socket.emit("refresh", getToday());
@@ -179,7 +158,7 @@ userSoc.on('connection', function(socket){
   })
 
   socket.on('choose', function(data) {
-    let menu = getMenu();
+    let menu = getFileToObj(MENU_FILE);
     menu.today = menu.today || [];
 
     let lastChoose = {};
@@ -200,7 +179,7 @@ userSoc.on('connection', function(socket){
     if (lastChoose.itemIdx != itemIdx)
       menu.today[itemIdx].users.push(data.userId);
 
-    saveMenu(menu);
+    saveObjectToFile(menu, MENU_FILE);
     let today = getToday();
 
     socket.emit("refresh", today);
@@ -209,9 +188,9 @@ userSoc.on('connection', function(socket){
 });
 
 function getToday() {
-  let menu = getMenu();
+  let menu = getFileToObj(MENU_FILE);
   menu.today = menu.today || [];
-  store = getStore();
+  store = getFileToObj(DATA_FILE);
   store.users = store.users || [];
 
   let today = menu.today.map(el => {
@@ -237,7 +216,7 @@ function getToday() {
 
 const adminSoc = io.of("/atmin");
 adminSoc.on("connect", function(socket) {
-  let menu = getMenu();
+  let menu = getFileToObj(MENU_FILE);
   let allFoods = menu.menu
   socket.emit("all-foods", allFoods);
 })
