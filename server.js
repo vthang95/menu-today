@@ -83,7 +83,7 @@ app.post("/register", (req, res) => {
   if (userIdx >= 0) {
     if (store.users[userIdx].password != hash) return res.redirect("/?error_message=" + "Tài khoản này đã được đăng kí. Nhưng password không đúng. HI");
     else {
-      res.cookie("ssid", store.users[userIdx].id);
+      res.cookie("ssid", store.users[userIdx].id, { maxAge: 123212312312, expires: 123212312312 });
       return res.redirect("/?name="+store.users[userIdx].name+"&id="+encodeURIComponent(store.users[userIdx].id));
     }
   }
@@ -95,7 +95,7 @@ app.post("/register", (req, res) => {
   store.users.push(user);
   saveObjectToFile(store, DATA_FILE);
 
-  res.cookie("ssid", user.id, { maxAge: 123212312312 });
+  res.cookie("ssid", user.id, { maxAge: 123212312312, expires: 123212312312 });
   res.redirect("/?name="+user.name+"&id="+encodeURIComponent(user.id));
 });
 
