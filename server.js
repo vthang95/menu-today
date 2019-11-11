@@ -211,7 +211,7 @@ function getToday() {
     };
   })
 
-  return { menu: today, date: menu.date };
+  return { menu: today, date: menu.date, users: store.users.map(el => ({ id: el.id, name: el.name })) };
 }
 
 const adminSoc = io.of("/atmin");

@@ -33,6 +33,5 @@ window.onload = function() {
   socket = io("/atmin");
 
   socket.on("all-foods", function(data) {
-    console.log("data", data);
   })
 }

@@ -146,7 +146,6 @@ const FrontendLogic = (function() {
   }
 
   function renderFoods(today) {
-    console.log("today", today)
     let sectionFoods = document.getElementById("food-menu");
     if (!sectionFoods) return;
 
@@ -166,11 +165,28 @@ const FrontendLogic = (function() {
     sectionFoods.innerHTML = foodDoms;
   }
 
+  function renderUnorderedUsers(users) {
+    let dom = document.getElementById("unordered-users");
+    if (!dom) return;
+
+    dom.innerHTML = "";
+    for (let i = 0; i < users.length; i++) {
+      let div = document.createElement("div");
+      div.className = "people-item";
+      if (users[i].id == window.User.id) {
+        div.className += " self";
+      }
+      div.innerHTML = users[i].name;
+      dom.appendChild(div);
+    }
+  }
+
   return {
     showLogin,
     checkUserLogged,
     renderFoods,
-    renderSummary
+    renderSummary,
+    renderUnorderedUsers
   };
 })();
 
@@ -221,6 +237,20 @@ const Socket = (function() {
     date.innerHTML = data.date;
 
     let menu = data.menu;
+
+    let orderedUsers = menu.reduce((acc, element) => {
+      let users = element.users;
+      return [...acc, ...users];
+    }, []);
+
+    let unorderdUsers = [];
+
+    for (let i = 0; i < data.users.length; i++) {
+      let idx = orderedUsers.findIndex(el => el.id == data.users[i].id);
+      if (idx < 0) unorderdUsers.push(data.users[i]);
+    }
+
+    FrontendLogic.renderUnorderedUsers(unorderdUsers);
 
     FrontendLogic.renderFoods(data);
     for (let i = 0; i < menu.length; i++) {
