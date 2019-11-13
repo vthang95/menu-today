@@ -135,11 +135,12 @@ const FrontendLogic = (function() {
       }
     }
 
+    let discount = 5;
     let sum = document.createElement("div");
     sum.className = "sum-price";
     sum.innerHTML = `
       <strong>Số người: <span class="sum-number">${peopleCount}</span></strong>,${" "}
-      <strong>Tổng tiền: <span class="sum-number">${Tools.formatNumber(sumNum)} đ</span>
+      <strong>Tổng tiền: <span class="sum-number">${Tools.formatNumber(sumNum * (1 - (discount / 100)))} đ</span>  (<s>${Tools.formatNumber(sumNum)}</s>)
       `;
 
     summary.appendChild(sum);
