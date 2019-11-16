@@ -247,6 +247,7 @@ const Socket = (function() {
     let unorderdUsers = [];
 
     for (let i = 0; i < data.users.length; i++) {
+      if (data.users[i].isDeactive) continue;
       let idx = orderedUsers.findIndex(el => el.id == data.users[i].id);
       if (idx < 0) unorderdUsers.push(data.users[i]);
     }
