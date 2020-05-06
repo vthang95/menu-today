@@ -277,3 +277,11 @@ section {
   margin-bottom: 20px;
   margin-top: 20px;
 }
+
+#lockstatus {
+  margin-top: 10px;
+}
+
+.food-container {
+  position: relative;
+}

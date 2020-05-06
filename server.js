@@ -19,6 +19,8 @@ function buildLog(userId, foodId) {
 
 const DATA_FILE = "data.json";
 const MENU_FILE = "menu-today.json";
+const LOCK_PATH = process.env.MENU_LOCK_PATH || "lock";
+const UNLOCK_PATH = process.env.MENU_UNLOCK_PATH || "unlock";
 
 fs.readFile("data.json", "utf-8", function(_err, content) {
   if (!content) {
@@ -58,6 +60,24 @@ function saveObjectToFile(obj, fileName) {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+
+app.get("/" + LOCK_PATH, (_req, res) => {
+  let menu = fs.readFileSync("menu-today.json", "utf-8");
+  let menuObj = JSON.parse(menu);
+  menuObj.lock = true;
+  saveObjectToFile(menuObj, MENU_FILE);
+  userSoc.emit("lock")
+  res.send("ok")
+})
+
+app.get("/" + UNLOCK_PATH, (_req, res) => {
+  let menu = fs.readFileSync("menu-today.json", "utf-8");
+  let menuObj = JSON.parse(menu);
+  menuObj.lock = false;
+  saveObjectToFile(menuObj, MENU_FILE);
+  userSoc.emit("unlock")
+  res.send("ok")
+})
 
 app.get('/food-menu', (_req, res) => {
   let menu = fs.readFileSync("menu-today.json", "utf-8");
@@ -159,6 +179,7 @@ userSoc.on('connection', function(socket){
 
   socket.on('choose', function(data) {
     let menu = getFileToObj(MENU_FILE);
+    if (menu.lock) return;
     menu.today = menu.today || [];
 
     let lastChoose = {};
@@ -211,7 +232,7 @@ function getToday() {
     };
   })
 
-  return { menu: today, date: menu.date, users: store.users.map(el => ({ id: el.id, name: el.name, isDeactive: el.isDeactive })) };
+  return { lock: menu.lock, menu: today, date: menu.date, users: store.users.map(el => ({ id: el.id, name: el.name, isDeactive: el.isDeactive })) };
 }
 
 const adminSoc = io.of("/atmin");

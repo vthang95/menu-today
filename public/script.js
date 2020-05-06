@@ -146,6 +146,36 @@ const FrontendLogic = (function() {
     summary.appendChild(sum);
   }
 
+  function unlockMenu() {
+    let lockstatus = document.getElementById("lockstatus");
+    lockstatus.innerHTML = "";
+    let domLock = document.getElementById('menu-lock');
+    if (!domLock) return;
+    domLock.parentNode.removeChild(domLock);
+  }
+
+  function lockMenu() {
+    let lockstatus = document.getElementById("lockstatus");
+    lockstatus.innerHTML = "<h1 style=\"color: red\">Đã khóa menu</h1>";
+    let domLock = document.getElementById('menu-lock');
+    if (!domLock) {
+      domLock = document.createElement('div');
+      domLock.style.width = "100%";
+      domLock.style.height = "100%";
+      domLock.style.background = "rgba(0,0,0,.1)";
+      domLock.style.top = "0";
+      domLock.style.left = "0";
+      domLock.style.position = "absolute";
+      domLock.addEventListener('click', (e) => {
+        e.stopPropagation();
+      })
+    }
+    domLock.id = "menu-lock";
+    let foodMenu = document.getElementById('food-menu');
+    if (!foodMenu) return;
+    foodMenu.appendChild(domLock);
+  }
+
   function renderFoods(today) {
     let sectionFoods = document.getElementById("food-menu");
     if (!sectionFoods) return;
@@ -183,6 +213,8 @@ const FrontendLogic = (function() {
   }
 
   return {
+    lockMenu,
+    unlockMenu,
     showLogin,
     checkUserLogged,
     renderFoods,
@@ -213,6 +245,8 @@ const Socket = (function() {
       localStorage.removeItem("user");
       window.location.href = "/logout";
     });
+    socket.on("lock", function() { FrontendLogic.lockMenu(); })
+    socket.on("unlock", function() { FrontendLogic.unlockMenu(); })
   }
 
   function handleJoin(user) {
@@ -280,6 +314,8 @@ const Socket = (function() {
       peopleContainer.appendChild(people);
       FrontendLogic.renderSummary();
     }
+
+    if (data.lock) FrontendLogic.lockMenu();
   }
 
   return {
