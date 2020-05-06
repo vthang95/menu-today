@@ -157,23 +157,34 @@ const FrontendLogic = (function() {
   function lockMenu() {
     let lockstatus = document.getElementById("lockstatus");
     lockstatus.innerHTML = "<h1 style=\"color: red\">Đã khóa menu</h1>";
-    let domLock = document.getElementById('menu-lock');
-    if (!domLock) {
-      domLock = document.createElement('div');
-      domLock.style.width = "100%";
-      domLock.style.height = "100%";
-      domLock.style.background = "rgba(0,0,0,.1)";
-      domLock.style.top = "0";
-      domLock.style.left = "0";
-      domLock.style.position = "absolute";
-      domLock.addEventListener('click', (e) => {
+    let items = document.querySelectorAll(`.food-form-item`);
+    for (let i = 0; i < items.length; i++) {
+      let item = items[i];
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
         e.stopPropagation();
+
+        let backdrop = document.createElement('div');
+        backdrop.style.position = "fixed";
+        backdrop.style.width = "100%";
+        backdrop.style.height = "100%";
+        backdrop.style.top = "0";
+        backdrop.style.left = "0";
+        backdrop.style.background = "rgba(0,0,0,.4)";
+        backdrop.style.display = "flex";
+        backdrop.style.alignItems = "center";
+        backdrop.style.justifyContent = "center";
+        backdrop.style.flexDirection = "column";
+
+        let iframe = document.createElement('div');
+        iframe.innerHTML = `
+          <iframe width="560" height="315" src="https://www.youtube.com/embed/BkMAFpMMH0A?autoplay=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        `
+
+        backdrop.appendChild(iframe);
+        document.body.appendChild(backdrop);
       })
     }
-    domLock.id = "menu-lock";
-    let foodMenu = document.getElementById('food-menu');
-    if (!foodMenu) return;
-    foodMenu.appendChild(domLock);
   }
 
   function renderFoods(today) {
